@@ -67,25 +67,62 @@ async function getModulesDefinitions(
   specificRoute,
   doRequire = true,
 ) {
-  const files = await fs.promises.readdir(modulesPath)
-  const parseRoute = (/** @type {string} */ fileName) =>
-    specificRoute && fileName in specificRoute
-      ? specificRoute[fileName]
-      : `/${fileName.replace(/\.js$/i, '').replace(/_/g, '/')}`
+  // Create a require context for webpack
+  const moduleContext = doRequire
+    ? require.context('./module', false, /\.js$/)
+    : null
 
-  const modules = files
-    .reverse()
-    .filter((file) => file.endsWith('.js'))
-    .map((file) => {
-      const identifier = file.split('.').shift()
-      const route = parseRoute(file)
-      const modulePath = path.join(modulesPath, file)
-      const module = doRequire ? require(modulePath) : modulePath
+  try {
+    let files
+    if (process.env.NODE_ENV === 'production') {
+      // In production (webpack bundle), use context keys
+      files = moduleContext
+        ? moduleContext.keys().map((key) => key.slice(2))
+        : []
+    } else {
+      // In development, use fs
+      files = await fs.promises.readdir(modulesPath)
+    }
 
-      return { identifier, route, module }
-    })
+    const parseRoute = (/** @type {string} */ fileName) =>
+      specificRoute && fileName in specificRoute
+        ? specificRoute[fileName]
+        : `/${fileName.replace(/\.js$/i, '').replace(/_/g, '/')}`
 
-  return modules
+    const modules = files
+      .reverse()
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => {
+        const identifier = file.split('.').shift()
+        const route = parseRoute(file)
+
+        let module
+        if (doRequire) {
+          try {
+            if (process.env.NODE_ENV === 'production') {
+              // In production, use webpack context
+              module = moduleContext(`./${file}`)
+            } else {
+              // In development, use require
+              module = require(path.join(modulesPath, file))
+            }
+          } catch (err) {
+            console.error(`Error loading module ${file}:`, err)
+            return null
+          }
+        } else {
+          module = path.join(modulesPath, file)
+        }
+
+        return { identifier, route, module }
+      })
+      .filter(Boolean) // Remove null entries from failed loads
+
+    return modules
+  } catch (error) {
+    console.error('Error in getModulesDefinitions:', error)
+    throw error
+  }
 }
 
 /**
