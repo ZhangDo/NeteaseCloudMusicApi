@@ -3,7 +3,6 @@ const path = require('path')
 const express = require('express')
 const request = require('./util/request')
 const packageJSON = require('./package.json')
-const exec = require('child_process').exec
 const cache = require('./util/apicache').middleware
 const { cookieToJson } = require('./util/index')
 const fileUpload = require('express-fileupload')
@@ -133,6 +132,15 @@ async function getModulesDefinitions(
  * need to notify users to upgrade it manually.
  */
 async function checkVersion() {
+  const exec = function (cmd, cb) {
+    // not available on ios so we wrap around
+    const orig_exec = require('child_process').exec
+    try {
+      orig_exec(cmd, cb)
+    } catch (e) {
+      cb(null, '1.0.0') // use lowest version possible
+    }
+  }
   return new Promise((resolve) => {
     exec('npm info NeteaseCloudMusicApi version', (err, stdout) => {
       if (!err) {
