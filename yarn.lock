@@ -3106,11 +3106,6 @@ pngjs@^5.0.0:
   resolved "https://registry.npmjs.org/pngjs/-/pngjs-5.0.0.tgz"
   integrity sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==
 
-polywasm@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/polywasm/-/polywasm-0.2.0.tgz#11b0aa081a0a9b4753b023df7a24241f4550cb0a"
-  integrity sha512-13Lg5S4fkF6onHsIeITWBnrPYhPe6iqdZCGJ8K+RAlL3qvGptPuWR4aQtULmbkGW2/XzXxWoHKlWsYRAvfcLnA==
-
 power-assert-context-formatter@^1.0.7:
   version "1.2.0"
   resolved "https://registry.npmjs.org/power-assert-context-formatter/-/power-assert-context-formatter-1.2.0.tgz"
