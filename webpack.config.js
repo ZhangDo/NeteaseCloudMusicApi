@@ -1,6 +1,5 @@
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
-const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   entry: './index.js',
@@ -11,7 +10,6 @@ module.exports = {
   },
   target: 'node',
   mode: 'production',
-  externals: [nodeExternals()],
   plugins: [
     new CopyPlugin({
       patterns: [
@@ -31,7 +29,6 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
         type: 'javascript/auto',
         resolve: {
           fullySpecified: false,
@@ -45,4 +42,7 @@ module.exports = {
       message: /Critical dependency/,
     },
   ],
+  optimization: {
+    minimize: true,
+  },
 }
