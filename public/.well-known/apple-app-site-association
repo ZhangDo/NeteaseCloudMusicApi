@@ -6,6 +6,7 @@
         "appID": "9RANFDJPSF.com.codewithwk.subear",
         "paths": [
           "/keyboard/start",
+          "/keyboard/start/*",
           "/keyboard/start/*"
         ]
       }
